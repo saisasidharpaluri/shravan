@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Icon } from './Icon';
 
 const steps = [
   { number: '01', label: 'Speak', href: '/report/voice' },
@@ -15,11 +16,11 @@ export function WizardShell({ step, children }: { step: number; children: React.
         const complete = index + 1 < step;
         const current = index + 1 === step;
         return <div key={item.number} className={`wizard-step${current ? ' current' : ''}${complete ? ' complete' : ''}`} aria-current={current ? 'step' : undefined}>
-          <span className="wizard-step-number">{complete ? '✓' : item.number}</span><span>{item.label}</span>
+          <span className="wizard-step-number">{complete ? <Icon name="check"/> : item.number}</span><span>{item.label}</span>
         </div>;
       })}
     </nav>
     <section className="wizard-card">{children}</section>
-    <p className="demo-disclosure"><span aria-hidden="true">◈</span> Demo only · Reports are saved in this browser and aren’t sent to a civic authority.</p>
+    <p className="demo-disclosure"><span><Icon name="privacy"/></span> Demo only · Reports are saved in this browser and aren’t sent to a civic authority.</p>
   </main>;
 }

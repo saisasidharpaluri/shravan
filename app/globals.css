@@ -34,6 +34,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .site-footer{min-height:82px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
 .footer-brand{font-size:16px;font-weight:750}.footer-brand .brand-mark{width:32px;height:32px;border-radius:11px;font-size:16px}
 .site-footer a{min-height:44px;display:inline-flex;align-items:center;color:var(--forest);font-weight:650;text-decoration:none}.site-footer a:hover{text-decoration:underline}
+.ui-icon{width:1em;height:1em;display:inline-block;flex:0 0 auto;vertical-align:-.15em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .eyebrow,.page-kicker{margin:0 0 15px;color:var(--forest);font-size:12px;line-height:1.4;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
 .eyebrow-dot{width:8px;height:8px;display:inline-block;margin-right:9px;border-radius:50%;background:var(--clay);vertical-align:1px}
 .button{min-height:50px;display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:0 20px;border:1px solid transparent;border-radius:999px;cursor:pointer;font-size:15px;font-weight:700;text-decoration:none;transition:background .18s,border-color .18s,color .18s,transform .18s,box-shadow .18s}
@@ -75,6 +76,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .wizard-steps{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px;padding:0 20px}
 .wizard-step{min-width:0;position:relative;display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px;font-weight:650}
 .wizard-step:not(:last-child)::after{content:'';position:absolute;left:46px;right:12px;top:20px;height:2px;background:var(--line)}
+.wizard-step>span:last-child{position:relative;z-index:1;padding:0 4px;background:var(--surface)}
 .wizard-step-number{z-index:1;width:42px;height:42px;flex:0 0 auto;display:grid;place-items:center;border:1px solid var(--line-strong);border-radius:50%;background:var(--canvas);color:var(--body);font-size:13px;font-weight:750}
 .wizard-step.current{color:var(--forest)}.wizard-step.current .wizard-step-number{border-color:var(--forest);background:var(--forest);color:#fff;box-shadow:0 0 0 4px var(--sage-pale)}
 .wizard-step.complete{color:var(--forest)}.wizard-step.complete .wizard-step-number{border-color:#9cab8c;background:var(--sage-pale);color:var(--forest)}
@@ -231,10 +233,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  .app-frame{width:min(100% - 36px,560px)}.site-header{min-height:70px}.brand-mark{width:38px;height:38px;border-radius:13px}.brand-name{font-size:21px}
  .site-nav{gap:4px}.nav-link,.nav-cta{min-height:44px;padding-inline:11px;font-size:13px}
  .site-footer{min-height:70px;flex-wrap:wrap;gap:6px 14px;padding:12px 0}.site-footer>span:nth-child(2){display:none}
- .home-hero{min-height:0;grid-template-columns:1fr;gap:24px;padding:34px 0 30px}
- .hero-copy{max-width:none}.hero-copy h1{font-size:clamp(42px,10vw,60px)}
- .hero-description{max-width:540px;margin:17px 0 20px;font-size:16px}
- .hero-assurances{gap:8px 17px;margin-top:19px;font-size:13px}.hero-trust{margin-top:14px;font-size:12px}
+ .home-hero{min-height:0;grid-template-columns:1fr;gap:20px;padding:28px 0 24px}
+ .hero-copy{max-width:none}.hero-copy h1{font-size:clamp(39px,9vw,56px)}
+ .hero-description{max-width:540px;margin:14px 0 16px;font-size:16px}
+ .hero-assurances{gap:8px 17px;margin-top:15px;font-size:13px}.hero-trust{margin-top:11px;font-size:12px}
  .hero-visual{width:min(100%,580px);margin-inline:auto}
  .home-how{grid-template-columns:1fr;gap:9px;padding:21px 0}.how-heading{grid-column:auto;margin-bottom:4px}
  .how-item{grid-template-columns:27px 34px 1fr;min-height:57px}.how-item small{font-size:13px}
@@ -243,7 +245,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  .wizard-heading{margin:12px 0 14px;text-align:left}.wizard-heading h1{font-size:31px}
  .wizard-steps{gap:7px;margin-bottom:13px;padding:0 2px}.wizard-step{gap:6px;font-size:12px}
  .wizard-step-number{width:34px;height:34px}.wizard-step:not(:last-child)::after{left:37px;right:5px;top:16px}
- .wizard-content{padding:20px 17px}.form-intro{gap:11px;margin-bottom:17px}
+ .wizard-content{padding:20px 17px}.wizard-content.voice-content{padding-bottom:calc(100px + env(safe-area-inset-bottom))}.form-intro{gap:11px;margin-bottom:17px}
  .form-icon{width:42px;height:42px;border-radius:13px}.form-intro h2{font-size:19px}.form-intro p{font-size:14px}
  .language-options{gap:8px}.language-option{min-height:60px;gap:8px;padding:8px 10px}
  .language-glyph{width:33px;height:33px;font-size:16px}.language-option b{font-size:14px}.language-option small{font-size:12px}
