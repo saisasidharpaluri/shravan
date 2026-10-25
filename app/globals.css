@@ -174,3 +174,80 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .app-frame { padding: 0 13px; }.site-nav { gap: 8px; }.nav-cta { gap: 4px; }.hero-actions { align-items: stretch; flex-direction: column; }.hero-actions .button { justify-content: space-between; }.wizard-content { padding-right: 13px; padding-left: 13px; }.wizard-actions .button { padding: 0 8px; font-size: 9px; }.wizard-actions .button:last-child { gap: 6px; }.detail-actions { flex-direction: column; }.detail-actions .button { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+/* Readability pass: bring supporting text and controls up to comfortable sizes. */
+.eyebrow { font-size: 11px; }
+.nav-link { font-size: 13px; }
+.nav-cta { font-size: 13px; }
+.site-footer, .site-footer a { font-size: 12px; }
+.hero-description { font-size: 16px; }
+.hero-trust { font-size: 12px; }
+.how-heading h2 { font-size: 20px; }
+.how-item b { font-size: 13px; }
+.how-item small { font-size: 11px; }
+.home-bottom p:last-child { font-size: 13px; }
+.button { font-size: 13px; }
+.back-home, .back-link { font-size: 13px; }
+.wizard-heading h1 { font-size: 32px; }
+.wizard-heading > p:last-child { font-size: 13px; }
+.wizard-step { font-size: 12px; }
+.form-intro h2 { font-size: 20px; }
+.form-intro p { font-size: 13px; }
+.language-fieldset legend, .category-fieldset legend { font-size: 13px; }
+.language-option b { font-size: 13px; }
+.language-option small { font-size: 11px; }
+.record-top b { font-size: 13px; }
+.record-top small { font-size: 11px; }
+.recording-indicator { font-size: 10px; }
+.record-actions > span, .text-action { font-size: 12px; }
+.field-label, .review-field-heading label { font-size: 13px; }
+.field-label > span, .review-field-heading > span { font-size: 11px; }
+.text-area { font-size: 14px; }
+.demo-disclosure { font-size: 11px; }
+.category-copy b { font-size: 12px; }
+.category-copy small { font-size: 10px; }
+.field-help { font-size: 12px; }
+.selected-summary small, .review-language small, .review-facts small, .detail-card-top small, .detail-description > small, .detail-facts small { font-size: 10px; }
+.selected-summary p, .review-language b, .review-facts b { font-size: 12px; }
+.selected-summary a, .review-language > a, .review-facts a { font-size: 11px; }
+.page-title-row p, .success-heading > p:last-child, .missing-page > p:not(.eyebrow) { font-size: 13px; }
+.storage-banner p, .detail-disclosure p { font-size: 12px; }
+.search-box input, .category-filter select { font-size: 12px; }
+.list-meta { font-size: 11px; }
+.report-list-top b, .report-excerpt, .detail-description p { font-size: 13px; }
+.report-list-top time, .report-list-bottom { font-size: 10px; }
+.detail-card-top b { font-size: 13px; }
+.detail-card-top time { font-size: 10px; }
+.detail-facts b { font-size: 12px; }
+.next-action b { font-size: 12px; }
+.next-action small { font-size: 11px; }
+
+@media (max-width: 680px) {
+  .nav-link { font-size: 12px; }
+  .nav-cta { font-size: 12px; }
+  .site-footer, .site-footer a { font-size: 11px; }
+  .hero-description { font-size: 15px; }
+  .hero-trust { font-size: 11px; }
+  .how-item b { font-size: 12px; }
+  .how-item small { font-size: 10px; }
+  .home-bottom p:last-child { font-size: 12px; }
+  .button { font-size: 12px; }
+  .wizard-step { font-size: 11px; }
+  .form-intro p { font-size: 12px; }
+  .language-option b { font-size: 12px; }
+  .language-option small { font-size: 10px; }
+  .record-top b { font-size: 12px; }
+  .record-top small { font-size: 10px; }
+  .field-label { font-size: 12px; }
+  .text-area { font-size: 14px; }
+  .demo-disclosure { font-size: 10px; }
+  .category-copy b { font-size: 12px; }
+  .category-copy small { font-size: 10px; }
+  .field-help { font-size: 11px; }
+  .page-title-row p, .success-heading > p:last-child { font-size: 12px; }
+  .storage-banner p, .detail-disclosure p { font-size: 11px; }
+  .search-box input, .category-filter select { font-size: 12px; }
+  .report-list-top b, .report-excerpt { font-size: 12px; }
+  .report-list-bottom { font-size: 9px; }
+  .detail-description p { font-size: 13px; }
+  .detail-facts b { font-size: 11px; }
+}
