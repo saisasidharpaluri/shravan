@@ -8,8 +8,8 @@ const steps = [
 
 export function WizardShell({ step, children }: { step: number; children: React.ReactNode }) {
   return <main id="top" className="wizard-page">
-    <Link href="/" className="back-home"><span aria-hidden="true">←</span> Home</Link>
-    <div className="wizard-heading"><p className="eyebrow">A BETTER NEIGHBOURHOOD STARTS HERE</p><h1>Let’s report an issue.</h1><p>Your report stays on this device in this demo.</p></div>
+    <div className="wizard-topline"><Link href="/" className="back-home"><span aria-hidden="true">←</span> Home</Link><span className="wizard-demo-tag"><span aria-hidden="true"/> Demo · Saved on this device</span></div>
+    <div className="wizard-heading"><p className="eyebrow">YOUR NEIGHBOURHOOD, YOUR VOICE</p><h1>Let’s report an issue.</h1></div>
     <nav className="wizard-steps" aria-label={`Step ${step} of 3`}>
       {steps.map((item, index) => {
         const complete = index + 1 < step;

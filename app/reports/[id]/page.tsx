@@ -15,6 +15,7 @@ export default function ReportDetailPage() {
   const report = reports.find(item => item.id === id);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
+  const [copied, setCopied] = useState(false);
   useEffect(() => { if (hydrated && searchParams.get('saved') === '1' && report && draft.transcript.trim()) { clearDraft(); router.replace(`/reports/${encodeURIComponent(report.id)}`); } }, [hydrated, report, draft.transcript, clearDraft, router, searchParams]);
 
   async function playConfirmation() {
@@ -34,6 +35,17 @@ export default function ReportDetailPage() {
     finally { setBusy(false); }
   }
 
+  async function copyReference() {
+    if (!report) return;
+    try {
+      await navigator.clipboard.writeText(report.id);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setNotice('Copy isn’t available here. You can select the reference number to copy it.');
+    }
+  }
+
   function removeReport() {
     if (!report) return;
     if (!window.confirm(`Delete demo report ${report.id} from this browser? This cannot be undone.`)) return;
@@ -47,12 +59,12 @@ export default function ReportDetailPage() {
   const language = getLanguage(report.language);
   return <main id="top" className="content-page detail-page">
     <Link href="/reports" className="back-link"><span aria-hidden="true">←</span> My reports</Link>
-    <div className="success-heading"><span className="success-seal" aria-hidden="true">✓</span><p className="eyebrow">SAVED ON THIS DEVICE</p><h1>Demo report saved on this device.</h1><p>Your report and reference number are available in this browser.</p></div>
-    <article className="detail-card"><div className="detail-card-top"><span className="report-type-icon" aria-hidden="true">⌖</span><div><small>DEMO REFERENCE</small><b>{report.id}</b></div><time dateTime={report.createdAt}>{new Date(report.createdAt).toLocaleString()}</time></div>
+    <div className="success-heading"><span className="success-seal" aria-hidden="true">✓</span><p className="eyebrow">SAVED ON THIS DEVICE</p><h1>Your demo report is saved.</h1><p>You can find it again in My reports on this browser.</p></div>
+    <article className="detail-card"><div className="reference-card"><div><small>YOUR DEMO REFERENCE</small><strong>{report.id}</strong></div><button type="button" className="copy-reference" onClick={copyReference} aria-label="Copy demo reference"><span aria-hidden="true">{copied ? '✓' : '▢'}</span> {copied ? 'Copied' : 'Copy reference'}</button></div><div className="detail-card-top"><span className="report-type-icon" aria-hidden="true">⌖</span><div><small>ISSUE TYPE</small><b>{report.category}</b></div><time dateTime={report.createdAt}>{new Date(report.createdAt).toLocaleString()}</time></div>
       <div className="detail-description"><small>DESCRIPTION</small><p lang={language.htmlLang}>{report.transcript}</p></div>
       <div className="detail-facts"><div><small>ISSUE TYPE</small><b>{report.category}</b></div><div><small>AREA OR LANDMARK</small><b>{report.area || 'Not provided'}</b></div><div><small>LANGUAGE</small><b>{language.nativeName} · {language.name}</b></div></div>
       <div className="detail-disclosure"><span aria-hidden="true">◈</span><p><b>This is a demo report.</b> It is saved only in this browser. No civic authority has received it, and it has no official status.</p></div>
-      <div className="detail-actions"><button className="button button-secondary" onClick={playConfirmation} disabled={busy}>{busy ? <><span className="spinner"/> Preparing voice…</> : <><span aria-hidden="true">▶</span> Hear confirmation</>}</button><Link className="button button-primary" href="/reports">My reports <span aria-hidden="true">✓</span></Link></div>
+      <div className="detail-actions"><button className="button button-secondary" onClick={playConfirmation} disabled={busy}>{busy ? <><span className="spinner"/> Preparing voice…</> : <><span aria-hidden="true">▶</span> Hear confirmation</>}</button><Link className="button button-primary" href="/reports">Go to my reports <span aria-hidden="true">→</span></Link></div>
       {notice && <p className="form-notice" role="status">{notice}</p>}
       <button type="button" className="text-action report-detail-delete" onClick={removeReport}>Delete this demo report</button>
     </article>
