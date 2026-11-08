@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const text = typeof body.text === 'string' ? body.text.trim() : '';
-    if (!text || text.length > 500 || !isSupportedLanguage(body.language)) {
+    if (!text || text.length > 800 || !isSupportedLanguage(body.language)) {
       return NextResponse.json({ error: 'Confirmation text or language is invalid.' }, { status: 400 });
     }
     const language = getLanguage(body.language);

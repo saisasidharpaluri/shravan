@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     if (!audio.type.startsWith('audio/')) return NextResponse.json({ error: 'Please upload a valid audio recording.' }, { status: 415 });
     if (audio.size < 1200) return NextResponse.json({ error: 'The recording sounds empty. Please record again or type your report.' }, { status: 422 });
     if (audio.size > 8 * 1024 * 1024) return NextResponse.json({ error: 'Audio must be smaller than 8 MB.' }, { status: 413 });
-    if (!isSupportedLanguage(language)) return NextResponse.json({ error: 'Choose Hindi or English.' }, { status: 400 });
+    if (!isSupportedLanguage(language)) return NextResponse.json({ error: 'Choose one of the supported Gnani languages.' }, { status: 400 });
     const selectedLanguage = getLanguage(language);
 
     const payload = new FormData();
@@ -43,7 +43,8 @@ export async function POST(request: NextRequest) {
     if (!result.success || typeof result.transcript !== 'string' || !result.transcript.trim()) {
       return NextResponse.json({ error: 'No clear speech was recognized. Try a new recording or type your report.' }, { status: 422 });
     }
-    return NextResponse.json({ transcript: result.transcript });
+    const transcriptionLanguage = isSupportedLanguage(result.detected_language_code) ? result.detected_language_code : undefined;
+    return NextResponse.json({ transcript: result.transcript, ...(transcriptionLanguage ? { transcriptionLanguage } : {}) });
   } catch (error) {
     console.error('Transcription request failed:', error instanceof Error ? error.message : 'unknown error');
     return NextResponse.json({ error: 'Speech service could not be reached. Please try again or type your report.' }, { status: 502 });

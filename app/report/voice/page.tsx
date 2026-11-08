@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { WizardShell } from '../../components/WizardShell';
 import { useReports } from '../../components/ReportProvider';
-import { SUPPORTED_LANGUAGES, type Language } from '../../lib/languages';
+import { getLanguage, isSupportedLanguage, SUPPORTED_LANGUAGES, type Language } from '../../lib/languages';
 import { Icon } from '../../components/Icon';
+
+const MAX_RECORDING_SECONDS = 30;
 
 async function toWav(blob: Blob): Promise<Blob> {
   const context = new AudioContext();
@@ -61,11 +63,11 @@ export default function VoicePage() {
 
   useEffect(() => {
     if (!recording) return;
-    const timer = window.setInterval(() => setSeconds(value => Math.min(value + 1, 60)), 1000);
+    const timer = window.setInterval(() => setSeconds(value => Math.min(value + 1, MAX_RECORDING_SECONDS)), 1000);
     return () => window.clearInterval(timer);
   }, [recording]);
   useEffect(() => {
-    if (recording && seconds >= 60 && recorderRef.current?.state === 'recording') recorderRef.current.stop();
+    if (recording && seconds >= MAX_RECORDING_SECONDS && recorderRef.current?.state === 'recording') recorderRef.current.stop();
   }, [recording, seconds]);
   useEffect(() => () => {
     if (recorderRef.current?.state === 'recording') recorderRef.current.stop();
@@ -133,7 +135,7 @@ export default function VoicePage() {
       const response = await fetch('/api/transcribe', { method: 'POST', body: data });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Transcription failed. You can still type your report.');
-      setDraft({ transcript: result.transcript, transcriptionLanguage: draft.language });
+      setDraft({ transcript: result.transcript, transcriptionLanguage: isSupportedLanguage(result.transcriptionLanguage) ? result.transcriptionLanguage : draft.language });
       setNotice('Transcript ready. Review and edit it before continuing.');
     } catch (error) { setNotice(error instanceof Error ? error.message : 'Could not transcribe this recording. You can type your report instead.'); }
     finally { setBusy(false); }
@@ -143,18 +145,18 @@ export default function VoicePage() {
     if (language === draft.language) return;
     if (draft.transcript.trim() && draft.transcriptionLanguage && draft.transcriptionLanguage !== language) {
       setPendingLanguage(language);
-      setNotice('This transcript stays in its original language. Confirm if you want to use a different language for new recordings.');
+      setNotice('Your current text will stay as written. Confirm to use the new language for recording and voice read-back.');
       return;
     }
-    setDraft({ language });
+    setDraft({ language, speechLanguage: language });
     setPendingLanguage(null);
     setNotice('');
   }
 
   function confirmLanguageChange() {
-    if (pendingLanguage) setDraft({ language: pendingLanguage });
+    if (pendingLanguage) setDraft({ language: pendingLanguage, speechLanguage: pendingLanguage });
     setPendingLanguage(null);
-    setNotice('Your existing transcript has not been translated. New recordings will use the selected language.');
+    setNotice('Your existing text has not been translated. New recordings and voice read-back will use the selected language.');
   }
 
   function discardRecording() {
@@ -169,24 +171,24 @@ export default function VoicePage() {
   }
 
   function updateTypedText(value: string) {
-    setDraft({ transcript: value, transcriptionLanguage: null });
+    setDraft({ transcript: value, transcriptionLanguage: draft.language });
   }
 
   const time = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
   return <WizardShell step={1}><div className="wizard-content voice-content">
-    <div className="form-intro"><span className="form-icon"><Icon name="voice"/></span><div><h2>Tell us what happened</h2><p>Start with a voice note, or type your description below.</p></div></div>
-    <fieldset className="language-fieldset"><legend>Choose your language</legend><div className="language-options">
-      {SUPPORTED_LANGUAGES.map(language => <button key={language.code} type="button" className={draft.language === language.code ? 'language-option selected' : 'language-option'} aria-pressed={draft.language === language.code} onClick={() => chooseLanguage(language.code)} disabled={recording || busy}><span className="language-glyph">{language.code === 'hi-IN' ? 'अ' : 'A'}</span><span><b>{language.nativeName}</b><small>{language.englishName}</small></span><span className="option-check"><Icon name="check"/></span></button>)}
+    <div className="form-intro"><span className="form-icon"><Icon name="voice"/></span><div><h2>Tell us what happened</h2><p>Speak or type in any of these Gnani-supported languages.</p></div></div>
+    <fieldset className="language-fieldset"><legend>Choose the language you’ll speak</legend><div className="language-options">
+      {SUPPORTED_LANGUAGES.map(language => <button key={language.code} type="button" lang={language.htmlLang} className={draft.language === language.code ? 'language-option selected' : 'language-option'} aria-pressed={draft.language === language.code} onClick={() => chooseLanguage(language.code)} disabled={recording || busy}><span className="language-glyph" lang={language.htmlLang}>{language.glyph}</span><span><b>{language.nativeName}</b><small>{language.name}</small></span><span className="option-check"><Icon name="check"/></span></button>)}
     </div></fieldset>
-    {pendingLanguage && <div className="language-change-confirm" role="alert"><span>Your current transcript will stay in {draft.transcriptionLanguage === 'hi-IN' ? 'Hindi' : 'English'}.</span><button type="button" className="text-action" onClick={confirmLanguageChange}>Change to {pendingLanguage === 'hi-IN' ? 'Hindi' : 'English'}</button><button type="button" className="text-action" onClick={() => setPendingLanguage(null)}>Keep current language</button></div>}
-    <div className="record-panel"><div className="record-top"><div><b>{recording ? 'Listening to your report' : audioBlob ? 'Recording ready to review' : 'Record a voice note'}</b><small>{recording ? 'Speak clearly, then stop when you’re done.' : 'Up to 60 seconds · You can listen before transcribing.'}</small></div><span className={recording ? 'recording-indicator on' : 'recording-indicator'}>{recording && <i/>}{recording ? 'RECORDING' : 'MAX 60 SEC'}</span></div>
+    {pendingLanguage && <div className="language-change-confirm" role="alert"><span>Your current text stays in {draft.transcriptionLanguage ? getLanguage(draft.transcriptionLanguage).name : getLanguage(draft.language).name}.</span><button type="button" className="text-action" onClick={confirmLanguageChange}>Change to {getLanguage(pendingLanguage).name}</button><button type="button" className="text-action" onClick={() => setPendingLanguage(null)}>Keep current language</button></div>}
+    <div className="record-panel"><div className="record-top"><div><b>{recording ? 'Listening to your report' : audioBlob ? 'Recording ready to review' : 'Record a voice note'}</b><small>{recording ? 'Speak clearly, then stop when you’re done.' : 'Up to 30 seconds · You can listen before transcribing.'}</small></div><span className={recording ? 'recording-indicator on' : 'recording-indicator'}>{recording && <i/>}{recording ? 'RECORDING' : 'MAX 30 SEC'}</span></div>
       <div className="recorder-controls"><button type="button" className={recording ? 'mic-button stop' : 'mic-button'} onClick={recording ? () => recorderRef.current?.stop() : startRecording} aria-label={recording ? 'Stop recording' : 'Start voice recording'}>{recording ? <Icon name="stop"/> : <MicIcon/>}</button><div className="audio-level-track" role="progressbar" aria-label="Microphone input level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={level}><span style={{ width: `${Math.max(5, level)}%` }}/></div><time aria-live="off">{time}</time></div>
       {audioUrl && <audio className="audio-preview" controls preload="metadata" src={audioUrl} aria-label="Play back your recording before transcription"/>}
       {audioBlob && <><div className="audio-privacy-note"><span><Icon name="privacy"/></span><p><b>Before transcription:</b> Your recording is sent to Gnani AI for speech recognition. It is not attached to your saved demo report.</p></div><div className="record-actions"><span><span className="inline-check"><Icon name="check"/></span> Recording captured</span><button type="button" className="text-action" onClick={startRecording} disabled={busy}>Record again</button><button type="button" className="text-action" onClick={discardRecording} disabled={busy}>Discard</button><button type="button" className="button button-soft" onClick={transcribe} disabled={busy}>{busy ? <><span className="spinner"/> Transcribing…</> : 'Transcribe with Prisma'}</button></div></>}
     </div>
     <div className="or-divider"><span>OR TYPE YOUR REPORT</span></div>
     <label className="field-label" htmlFor="report-text">Describe the issue <span>{draft.transcript.length}/500</span></label>
-    <textarea className="text-area" id="report-text" lang={draft.language === 'hi-IN' ? 'hi' : 'en-IN'} maxLength={500} value={draft.transcript} onChange={event => updateTypedText(event.target.value)} placeholder={draft.language === 'hi-IN' ? 'उदाहरण: हमारे मोहल्ले में पार्क के पास सड़क पर बड़ा गड्ढा है…' : 'Example: There is a large pothole near the park on our street…'} />
+    <textarea className="text-area" id="report-text" lang={getLanguage(draft.transcriptionLanguage ?? draft.language).htmlLang} maxLength={500} value={draft.transcript} onChange={event => updateTypedText(event.target.value)} placeholder={getLanguage(draft.language).example} />
     {notice && <p className="form-notice" role="status">{notice}</p>}
     <div className="wizard-actions"><span className="step-hint">Step 1 of 3</span><button className="button button-primary" type="button" onClick={continueToDetails}>Continue <span aria-hidden="true">→</span></button></div>
   </div></WizardShell>;

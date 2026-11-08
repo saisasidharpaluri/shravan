@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { isSupportedLanguage, type Language } from '../lib/languages';
+import { getLanguageOrDefault, isSupportedLanguage, type Language } from '../lib/languages';
 
 export type SavedReport = {
   id: string;
@@ -9,10 +9,12 @@ export type SavedReport = {
   category: string;
   area: string;
   language: Language;
+  speechLanguage: Language;
   createdAt: string;
 };
 export type Draft = {
   language: Language;
+  speechLanguage: Language;
   transcript: string;
   category: string;
   area: string;
@@ -21,7 +23,7 @@ export type Draft = {
 
 const reportsKey = 'shravan-demo-reports-v1';
 const draftKey = 'shravan-demo-draft-v1';
-const defaultDraft: Draft = { language: 'hi-IN', transcript: '', category: 'Roads & potholes', area: '', transcriptionLanguage: null };
+const defaultDraft: Draft = { language: 'hi-IN', speechLanguage: 'hi-IN', transcript: '', category: 'Roads & potholes', area: '', transcriptionLanguage: null };
 
 type ReportContextValue = {
   hydrated: boolean;
@@ -44,19 +46,27 @@ export function ReportProvider({ children }: { children: React.ReactNode }) {
     try {
       const storedDraft = localStorage.getItem(draftKey);
       if (storedDraft) {
-        const parsed = JSON.parse(storedDraft) as Partial<Draft>;
+        const parsed = JSON.parse(storedDraft) as Partial<Draft> & { language?: unknown; speechLanguage?: unknown; transcriptionLanguage?: unknown };
+        const language = getLanguageOrDefault(parsed.language);
         setDraftState({
           ...defaultDraft,
           ...parsed,
-          language: isSupportedLanguage(parsed.language) ? parsed.language : defaultDraft.language,
+          language,
+          speechLanguage: getLanguageOrDefault(parsed.speechLanguage ?? parsed.language),
           transcriptionLanguage: isSupportedLanguage(parsed.transcriptionLanguage) ? parsed.transcriptionLanguage : null,
         });
       }
       const storedReports = localStorage.getItem(reportsKey);
       if (storedReports) {
-        const parsed = JSON.parse(storedReports) as Partial<SavedReport>[];
+        const parsed = JSON.parse(storedReports) as (Partial<SavedReport> & { language?: unknown; speechLanguage?: unknown })[];
         if (Array.isArray(parsed)) setReports(parsed.filter((item): item is SavedReport => !!item && typeof item.id === 'string' && typeof item.transcript === 'string').map(item => ({
-          id: item.id, transcript: item.transcript, category: typeof item.category === 'string' ? item.category : 'Other', area: typeof item.area === 'string' ? item.area : '', language: isSupportedLanguage(item.language) ? item.language : 'hi-IN', createdAt: typeof item.createdAt === 'string' ? item.createdAt : new Date().toISOString(),
+          id: item.id,
+          transcript: item.transcript,
+          category: typeof item.category === 'string' ? item.category : 'Other',
+          area: typeof item.area === 'string' ? item.area : '',
+          language: getLanguageOrDefault(item.language),
+          speechLanguage: getLanguageOrDefault(item.speechLanguage ?? item.language),
+          createdAt: typeof item.createdAt === 'string' ? item.createdAt : new Date().toISOString(),
         })).sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)).slice(0, 10));
       }
     } catch {
@@ -77,7 +87,15 @@ export function ReportProvider({ children }: { children: React.ReactNode }) {
 
   function saveReport() {
     const id = `SHR-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-    const report: SavedReport = { id, transcript: draft.transcript.trim(), category: draft.category, area: draft.area.trim(), language: draft.transcriptionLanguage ?? draft.language, createdAt: new Date().toISOString() };
+    const report: SavedReport = {
+      id,
+      transcript: draft.transcript.trim(),
+      category: draft.category,
+      area: draft.area.trim(),
+      language: draft.transcriptionLanguage ?? draft.language,
+      speechLanguage: draft.speechLanguage,
+      createdAt: new Date().toISOString(),
+    };
     const next = [report, ...reports].slice(0, 10);
     localStorage.setItem(reportsKey, JSON.stringify(next));
     setReports(next);
