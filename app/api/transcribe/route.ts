@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
     const incoming = await request.formData();
     const audio = incoming.get('audio');
     const language = incoming.get('language');
+    const mode = incoming.get('mode');
     if (!(audio instanceof File) || typeof language !== 'string') {
       return NextResponse.json({ error: 'Please record a complaint and choose a language.' }, { status: 400 });
     }
@@ -28,23 +29,41 @@ export async function POST(request: NextRequest) {
     if (audio.size > 8 * 1024 * 1024) return NextResponse.json({ error: 'Audio must be smaller than 8 MB.' }, { status: 413 });
     if (!isSupportedLanguage(language)) return NextResponse.json({ error: 'Choose one of the supported Gnani languages.' }, { status: 400 });
     const selectedLanguage = getLanguage(language);
+    if (mode !== null && mode !== 'single-language' && mode !== 'auto-codemix') {
+      return NextResponse.json({ error: 'Choose a supported transcription mode.' }, { status: 400 });
+    }
 
     const payload = new FormData();
     payload.append('audio_file', audio, audio.name || 'complaint.wav');
-    payload.append('language_code', selectedLanguage.sttLanguage);
+    const useAutoCodeMix = mode === 'auto-codemix';
+    payload.append('language_code', useAutoCodeMix ? 'indic-auto' : selectedLanguage.sttLanguage);
+    if (useAutoCodeMix) {
+      payload.append('model', 'prisma-v3.0');
+      payload.append('format', 'codemix');
+    }
     const response = await fetch('https://api.vachana.ai/stt/v3', {
       method: 'POST', headers: { 'X-API-Key-ID': apiKey }, body: payload, signal: AbortSignal.timeout(45_000),
     });
     if (!response.ok) {
       console.error('Gnani Prisma request failed:', response.status);
-      return NextResponse.json({ error: response.status === 429 ? 'Speech service is busy. Please try again shortly.' : 'Could not transcribe that recording. Please try again.' }, { status: response.status === 429 ? 429 : 502 });
+      const error = response.status === 429
+        ? 'Speech service is busy. Please try again shortly.'
+        : useAutoCodeMix
+          ? 'Prisma v3.0 auto-detect is unavailable for this request. Turn off auto code-mix and retry with a selected language.'
+          : 'Could not transcribe that recording. Please try again.';
+      return NextResponse.json({ error }, { status: response.status === 429 ? 429 : 502 });
     }
     const result = await response.json();
     if (!result.success || typeof result.transcript !== 'string' || !result.transcript.trim()) {
       return NextResponse.json({ error: 'No clear speech was recognized. Try a new recording or type your report.' }, { status: 422 });
     }
     const transcriptionLanguage = isSupportedLanguage(result.detected_language_code) ? result.detected_language_code : undefined;
-    return NextResponse.json({ transcript: result.transcript, ...(transcriptionLanguage ? { transcriptionLanguage } : {}) });
+    return NextResponse.json({
+      transcript: result.transcript,
+      model: useAutoCodeMix ? 'prisma-v3.0' : 'prisma-v2.5',
+      mode: useAutoCodeMix ? 'auto-codemix' : 'single-language',
+      ...(transcriptionLanguage ? { transcriptionLanguage } : {}),
+    });
   } catch (error) {
     console.error('Transcription request failed:', error instanceof Error ? error.message : 'unknown error');
     return NextResponse.json({ error: 'Speech service could not be reached. Please try again or type your report.' }, { status: 502 });

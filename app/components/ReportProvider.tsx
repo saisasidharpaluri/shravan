@@ -3,6 +3,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { getLanguageOrDefault, isSupportedLanguage, type Language } from '../lib/languages';
 
+export type TranscriptionMode = 'single-language' | 'auto-codemix';
+export type TranscriptionModel = 'prisma-v2.5' | 'prisma-v3.0' | null;
+
 export type SavedReport = {
   id: string;
   transcript: string;
@@ -10,6 +13,8 @@ export type SavedReport = {
   area: string;
   language: Language;
   speechLanguage: Language;
+  transcriptionMode: TranscriptionMode;
+  transcriptionModel: TranscriptionModel;
   createdAt: string;
 };
 export type Draft = {
@@ -19,11 +24,13 @@ export type Draft = {
   category: string;
   area: string;
   transcriptionLanguage: Language | null;
+  transcriptionMode: TranscriptionMode;
+  transcriptionModel: TranscriptionModel;
 };
 
 const reportsKey = 'shravan-demo-reports-v1';
 const draftKey = 'shravan-demo-draft-v1';
-const defaultDraft: Draft = { language: 'hi-IN', speechLanguage: 'hi-IN', transcript: '', category: 'Roads & potholes', area: '', transcriptionLanguage: null };
+const defaultDraft: Draft = { language: 'hi-IN', speechLanguage: 'hi-IN', transcript: '', category: 'Roads & potholes', area: '', transcriptionLanguage: null, transcriptionMode: 'single-language', transcriptionModel: null };
 
 type ReportContextValue = {
   hydrated: boolean;
@@ -54,18 +61,22 @@ export function ReportProvider({ children }: { children: React.ReactNode }) {
           language,
           speechLanguage: getLanguageOrDefault(parsed.speechLanguage ?? parsed.language),
           transcriptionLanguage: isSupportedLanguage(parsed.transcriptionLanguage) ? parsed.transcriptionLanguage : null,
+          transcriptionMode: parsed.transcriptionMode === 'auto-codemix' ? 'auto-codemix' : 'single-language',
+          transcriptionModel: parsed.transcriptionModel === 'prisma-v2.5' || parsed.transcriptionModel === 'prisma-v3.0' ? parsed.transcriptionModel : null,
         });
       }
       const storedReports = localStorage.getItem(reportsKey);
       if (storedReports) {
         const parsed = JSON.parse(storedReports) as (Partial<SavedReport> & { language?: unknown; speechLanguage?: unknown })[];
-        if (Array.isArray(parsed)) setReports(parsed.filter((item): item is SavedReport => !!item && typeof item.id === 'string' && typeof item.transcript === 'string').map(item => ({
+        if (Array.isArray(parsed)) setReports(parsed.filter((item): item is SavedReport => !!item && typeof item.id === 'string' && typeof item.transcript === 'string').map((item): SavedReport => ({
           id: item.id,
           transcript: item.transcript,
           category: typeof item.category === 'string' ? item.category : 'Other',
           area: typeof item.area === 'string' ? item.area : '',
           language: getLanguageOrDefault(item.language),
           speechLanguage: getLanguageOrDefault(item.speechLanguage ?? item.language),
+          transcriptionMode: item.transcriptionMode === 'auto-codemix' ? 'auto-codemix' : 'single-language',
+          transcriptionModel: item.transcriptionModel === 'prisma-v2.5' || item.transcriptionModel === 'prisma-v3.0' ? item.transcriptionModel : null,
           createdAt: typeof item.createdAt === 'string' ? item.createdAt : new Date().toISOString(),
         })).sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)).slice(0, 10));
       }
@@ -94,6 +105,8 @@ export function ReportProvider({ children }: { children: React.ReactNode }) {
       area: draft.area.trim(),
       language: draft.transcriptionLanguage ?? draft.language,
       speechLanguage: draft.speechLanguage,
+      transcriptionMode: draft.transcriptionMode,
+      transcriptionModel: draft.transcriptionModel,
       createdAt: new Date().toISOString(),
     };
     const next = [report, ...reports].slice(0, 10);

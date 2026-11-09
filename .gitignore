@@ -4,3 +4,5 @@ out
 .env*
 !.env.example
 .DS_Store
+/artifacts/shravan-demo-video/**
+!/artifacts/shravan-demo-video/SHRAVAN-Gnani-Challenge-Demo.mp4

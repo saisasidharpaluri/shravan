@@ -126,17 +126,41 @@ export default function VoicePage() {
     }
   }
 
+  async function loadSyntheticSample() {
+    setBusy(true); setNotice(''); setSeconds(0);
+    try {
+      const response = await fetch('/demo/telugu-pothole.wav');
+      if (!response.ok) throw new Error('The synthetic Telugu voice sample is unavailable. You can still record or type your report.');
+      const sample = await response.blob();
+      if (audioUrl) URL.revokeObjectURL(audioUrl);
+      setAudioBlob(sample);
+      setAudioUrl(URL.createObjectURL(sample));
+      setDraft({ language: 'te-IN', speechLanguage: 'te-IN', transcriptionMode: 'auto-codemix', transcriptionModel: null });
+      setNotice('Synthetic Telugu-English sample loaded. Listen to it, then transcribe with Prisma v3.0.');
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : 'Could not load the synthetic voice sample.');
+    } finally { setBusy(false); }
+  }
+
   async function transcribe() {
     if (!audioBlob) return;
     setBusy(true); setNotice('');
     try {
       const wav = await toWav(audioBlob);
-      const data = new FormData(); data.append('audio', wav, 'complaint.wav'); data.append('language', draft.language);
+      const data = new FormData(); data.append('audio', wav, 'complaint.wav'); data.append('language', draft.language); data.append('mode', draft.transcriptionMode);
       const response = await fetch('/api/transcribe', { method: 'POST', body: data });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Transcription failed. You can still type your report.');
-      setDraft({ transcript: result.transcript, transcriptionLanguage: isSupportedLanguage(result.transcriptionLanguage) ? result.transcriptionLanguage : draft.language });
-      setNotice('Transcript ready. Review and edit it before continuing.');
+      const transcriptionMode = result.mode === 'auto-codemix' ? 'auto-codemix' : 'single-language';
+      setDraft({
+        transcript: result.transcript,
+        transcriptionLanguage: isSupportedLanguage(result.transcriptionLanguage) ? result.transcriptionLanguage : draft.language,
+        transcriptionMode,
+        transcriptionModel: result.model === 'prisma-v3.0' ? 'prisma-v3.0' : 'prisma-v2.5',
+      });
+      setNotice(transcriptionMode === 'auto-codemix'
+        ? `Prisma detected ${isSupportedLanguage(result.transcriptionLanguage) ? getLanguage(result.transcriptionLanguage).name : 'the spoken language'}. Review and edit the code-mixed transcript before continuing.`
+        : 'Transcript ready. Review and edit it before continuing.');
     } catch (error) { setNotice(error instanceof Error ? error.message : 'Could not transcribe this recording. You can type your report instead.'); }
     finally { setBusy(false); }
   }
@@ -171,18 +195,32 @@ export default function VoicePage() {
   }
 
   function updateTypedText(value: string) {
-    setDraft({ transcript: value, transcriptionLanguage: draft.language });
+    setDraft({ transcript: value, transcriptionLanguage: draft.language, transcriptionMode: 'single-language', transcriptionModel: null });
   }
 
   const time = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
   return <WizardShell step={1}><div className="wizard-content voice-content">
     <div className="form-intro"><span className="form-icon"><Icon name="voice"/></span><div><h2>Tell us what happened</h2><p>Speak or type in any of these Gnani-supported languages.</p></div></div>
-    <fieldset className="language-fieldset"><legend>Choose the language you’ll speak</legend><div className="language-options">
+    <fieldset className="language-fieldset"><legend>Choose a language, or let Prisma detect it</legend><div className="language-options">
       {SUPPORTED_LANGUAGES.map(language => <button key={language.code} type="button" lang={language.htmlLang} className={draft.language === language.code ? 'language-option selected' : 'language-option'} aria-pressed={draft.language === language.code} onClick={() => chooseLanguage(language.code)} disabled={recording || busy}><span className="language-glyph" lang={language.htmlLang}>{language.glyph}</span><span><b>{language.nativeName}</b><small>{language.name}</small></span><span className="option-check"><Icon name="check"/></span></button>)}
     </div></fieldset>
+    <fieldset className="transcription-mode-fieldset" disabled={recording || busy}>
+      <legend>Speech recognition mode</legend>
+      <label className={draft.transcriptionMode === 'auto-codemix' ? 'transcription-mode-option selected' : 'transcription-mode-option'}>
+        <input type="radio" name="transcription-mode" value="single-language" checked={draft.transcriptionMode === 'single-language'} onChange={() => setDraft({ transcriptionMode: 'single-language' })}/>
+        <span><b>Use selected language</b><small>Prisma v2.5 · Best when you’ll speak mainly one language.</small></span>
+        <span className="mode-version">v2.5</span>
+      </label>
+      <label className={draft.transcriptionMode === 'auto-codemix' ? 'transcription-mode-option selected' : 'transcription-mode-option'}>
+        <input type="radio" name="transcription-mode" value="auto-codemix" checked={draft.transcriptionMode === 'auto-codemix'} onChange={() => setDraft({ transcriptionMode: 'auto-codemix' })}/>
+        <span><b>Auto-detect + code-mix</b><small>Prisma v3.0 · Speak naturally across an Indian language and English.</small></span>
+        <span className="mode-version new">v3.0</span>
+      </label>
+    </fieldset>
     {pendingLanguage && <div className="language-change-confirm" role="alert"><span>Your current text stays in {draft.transcriptionLanguage ? getLanguage(draft.transcriptionLanguage).name : getLanguage(draft.language).name}.</span><button type="button" className="text-action" onClick={confirmLanguageChange}>Change to {getLanguage(pendingLanguage).name}</button><button type="button" className="text-action" onClick={() => setPendingLanguage(null)}>Keep current language</button></div>}
     <div className="record-panel"><div className="record-top"><div><b>{recording ? 'Listening to your report' : audioBlob ? 'Recording ready to review' : 'Record a voice note'}</b><small>{recording ? 'Speak clearly, then stop when you’re done.' : 'Up to 30 seconds · You can listen before transcribing.'}</small></div><span className={recording ? 'recording-indicator on' : 'recording-indicator'}>{recording && <i/>}{recording ? 'RECORDING' : 'MAX 30 SEC'}</span></div>
       <div className="recorder-controls"><button type="button" className={recording ? 'mic-button stop' : 'mic-button'} onClick={recording ? () => recorderRef.current?.stop() : startRecording} aria-label={recording ? 'Stop recording' : 'Start voice recording'}>{recording ? <Icon name="stop"/> : <MicIcon/>}</button><div className="audio-level-track" role="progressbar" aria-label="Microphone input level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={level}><span style={{ width: `${Math.max(5, level)}%` }}/></div><time aria-live="off">{time}</time></div>
+      {!audioBlob && <div className="sample-clip-row"><button type="button" className="text-action" onClick={loadSyntheticSample} disabled={recording || busy}>Try a synthetic Telugu-English sample</button><small>No microphone needed. It is sent to Gnani only if you choose Transcribe.</small></div>}
       {audioUrl && <audio className="audio-preview" controls preload="metadata" src={audioUrl} aria-label="Play back your recording before transcription"/>}
       {audioBlob && <><div className="audio-privacy-note"><span><Icon name="privacy"/></span><p><b>Before transcription:</b> Your recording is sent to Gnani AI for speech recognition. It is not attached to your saved demo report.</p></div><div className="record-actions"><span><span className="inline-check"><Icon name="check"/></span> Recording captured</span><button type="button" className="text-action" onClick={startRecording} disabled={busy}>Record again</button><button type="button" className="text-action" onClick={discardRecording} disabled={busy}>Discard</button><button type="button" className="button button-soft" onClick={transcribe} disabled={busy}>{busy ? <><span className="spinner"/> Transcribing…</> : 'Transcribe with Prisma'}</button></div></>}
     </div>

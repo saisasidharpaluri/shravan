@@ -11,6 +11,7 @@ export function formatReportForSharing(report: SavedReport) {
     `Description (${transcriptLanguage.name}): ${report.transcript}`,
     report.area ? `Nearby area or landmark: ${report.area}` : null,
     `Voice read-back language: ${speechLanguage.name}`,
+    report.transcriptionModel ? `Speech recognition: Gnani ${report.transcriptionModel}${report.transcriptionMode === 'auto-codemix' ? ' (automatic language detection + code-mix)' : ''}` : null,
     `Prepared: ${new Date(report.createdAt).toLocaleString()}`,
     '',
     'Demo only. SHRAVAN did not submit this report to a civic authority. Share it with the relevant ward or community desk yourself if you choose.',
