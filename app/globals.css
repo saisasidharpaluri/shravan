@@ -56,6 +56,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .hero-copy h1 em{color:var(--forest);font-style:normal;text-decoration:underline;text-decoration-color:#c5d1b8;text-decoration-thickness:7px;text-underline-offset:5px}
 .hero-description{max-width:480px;margin:23px 0 25px;color:var(--body);font-size:clamp(16px,1.3vw,18px);line-height:1.7}
 .hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:11px}
+.hero-resources{display:flex;flex-direction:column;align-items:flex-start;gap:9px;margin-top:12px}
+.hero-resources .button{min-height:46px}
+.video-coming-soon:disabled{cursor:not-allowed;opacity:.72}
+.resource-status{color:var(--muted);font-size:12px;font-weight:650}
 .hero-assurances{display:flex;flex-wrap:wrap;gap:16px 24px;margin-top:24px;color:var(--body);font-size:14px}
 .hero-assurances span{display:inline-flex;align-items:center;gap:8px}.hero-assurances b{width:21px;height:21px;display:inline-grid;place-items:center;border-radius:50%;background:var(--sage-pale);color:var(--forest);font-size:12px}
 .hero-trust{display:flex;align-items:flex-start;gap:8px;margin:24px 0 0;color:var(--muted);font-size:13px;line-height:1.45}.hero-trust span{color:var(--clay);font-size:16px}
@@ -302,7 +306,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:420px){
  .app-frame{width:min(100% - 28px,390px)}.site-header{gap:8px}.site-nav{gap:2px}
  .nav-link,.nav-cta{gap:5px;padding-inline:8px;font-size:12px}.brand-mark{width:35px;height:35px}.brand-name{font-size:20px}
- .hero-actions{align-items:stretch;flex-direction:column}.hero-actions .button{width:100%;justify-content:space-between}.hero-visual{margin-top:1px}
+ .hero-actions{align-items:stretch;flex-direction:column}.hero-actions .button,.hero-resources .button{width:100%;justify-content:space-between}.hero-resources{align-items:stretch}.hero-visual{margin-top:1px}
  .wizard-demo-tag{font-size:11px}.wizard-step{font-size:11px}.wizard-step-number{width:31px;height:31px}.wizard-step:not(:last-child)::after{left:33px;top:15px}
  .wizard-content{padding-inline:14px}.wizard-actions{margin-inline:-14px;padding-inline:14px}
  .language-options{grid-template-columns:1fr}.category-grid{grid-template-columns:1fr}
