@@ -23,7 +23,7 @@ export default function Home() {
         <p className="eyebrow"><span className="eyebrow-dot"/> VOICE-FIRST · 10 INDIAN LANGUAGES</p>
         <h1>Local issues<br/><em>deserve to be heard.</em></h1>
         <p className="hero-description">Speak or type about a pothole, water issue, or broken streetlight. Review every detail, then save a private demo reference on this device.</p>
-        <div className="hero-actions"><Link className="button button-primary" href="/report/voice">{hasDraft ? 'Continue your report' : 'Start a voice report'} <span aria-hidden="true">→</span></Link><Link className="button button-secondary" href="/reports">My reports <span className="button-count">{hydrated ? reports.length : '—'}</span></Link></div>
+        <div className="hero-actions"><Link className="button button-primary" href="/report/voice">{hasDraft ? 'Continue your report' : 'Start a voice report'} <span aria-hidden="true">→</span></Link><Link className="button button-secondary" href="/reports">My reports <span className="button-count">{hydrated ? reports.length : '—'}</span></Link><a className="button button-secondary" href="/shravan-pitch.pdf" target="_blank" rel="noopener noreferrer">Project pitch <span aria-hidden="true">↗</span></a></div>
         {hasDraft && <button className="fresh-start-link" type="button" onClick={startFresh}>Discard this draft and start fresh</button>}
         <div className="hero-assurances"><span><b aria-hidden="true"><Icon name="check"/></b> Ten Gnani voice languages</span><span><b aria-hidden="true"><Icon name="check"/></b> Review before saving</span></div>
         <p className="hero-trust"><span aria-hidden="true"><Icon name="privacy"/></span> Demo only · Nothing is sent to a civic authority.</p>
