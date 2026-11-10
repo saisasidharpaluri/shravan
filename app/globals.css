@@ -192,6 +192,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .review-privacy>span{color:var(--forest)}.review-privacy p{margin:0;font-size:13px;line-height:1.45}
 .review-privacy b{display:block;margin-bottom:3px;color:var(--ink)}
 .content-page{width:min(100%,1080px);min-height:520px;margin:0 auto;padding:38px 0 64px}
+.demo-player-page{max-width:1120px}
+.demo-player-card{margin:24px 0 0;padding:12px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--shadow-soft)}
+.demo-player{width:100%;display:block;aspect-ratio:16/9;border-radius:calc(var(--r-lg) - 8px);background:#17231e;object-fit:contain}
+.demo-player:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+.demo-video-note{padding:13px 8px 3px;color:var(--body);font-size:13px;line-height:1.55}
+.demo-video-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:18px}
 .page-kicker{margin-bottom:12px}.page-title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:22px}
 .page-title-row h1,.success-heading h1,.missing-page h1{font-size:clamp(36px,4.5vw,54px);letter-spacing:-.05em}
 .page-title-row p,.success-heading>p:last-child,.missing-page>p:not(.eyebrow){margin:9px 0 0;color:var(--body);font-size:16px;line-height:1.55}
@@ -291,6 +297,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  .content-page{min-height:0;padding:28px 0 44px}.page-title-row{align-items:flex-start;flex-direction:column;gap:13px}
  .page-title-row h1,.success-heading h1{font-size:40px}.page-title-row p,.success-heading>p:last-child{font-size:15px}
  .page-title-row>.button{width:100%}.storage-banner{margin:17px 0;padding:12px}.storage-banner p{font-size:13px}
+ .demo-player-card{margin-top:18px;padding:7px;border-radius:var(--r-md)}.demo-player{border-radius:calc(var(--r-md) - 5px)}.demo-video-note{padding:11px 5px 2px;font-size:12px}.demo-video-actions{flex-direction:column}.demo-video-actions .button{width:100%;justify-content:space-between}
  .report-tools{grid-template-columns:1fr;gap:9px;margin-top:19px}.list-meta{font-size:12px}
  .report-list-card{flex-wrap:wrap;gap:8px 10px;padding:12px}.report-list-body{min-width:calc(100% - 64px)}
  .report-list-top{align-items:flex-start;flex-direction:column;gap:2px}.report-list-top b{font-size:14px}

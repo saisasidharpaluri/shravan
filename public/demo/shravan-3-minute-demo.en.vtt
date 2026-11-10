@@ -1,0 +1,108 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.454
+A pothole can be easy to spot.
+
+00:00:02.454 --> 00:00:07.714
+Reporting it clearly can be harder, especially when the process starts with an English-only form.
+
+00:00:07.714 --> 00:00:11.220
+SHRAVAN is a voice-first civic reporting prototype by Sasidhar Paluri.
+
+00:00:11.220 --> 00:00:16.480
+It helps residents prepare, review, and keep a clear description in a language they speak.
+
+00:00:17.000 --> 00:00:24.200
+Here, the resident chooses Telugu and English code-mix, then selects Prisma version 3.0 automatic detection.
+
+00:00:24.200 --> 00:00:29.960
+The app offers ten language choices; this example focuses on Telugu-English speech.
+
+00:00:30.500 --> 00:00:35.366
+When people mix Telugu and English naturally, they do not need to translate first.
+
+00:00:35.366 --> 00:00:40.580
+This mode asks Prisma to detect the language and preserve the mixed transcript where supported.
+
+00:00:41.500 --> 00:00:48.380
+<lang te>సాయంత్రం park దగ్గర road మీద పెద్ద pothole ఉంది. rain వచ్చినప్పుడు water నిలుస్తోంది. దయచేసి త్వరగా repair చేయండి.</lang>
+In the evening, there is a large pothole near the park. When it rains, water collects. Please repair it soon.
+
+00:00:49.000 --> 00:00:53.160
+This synthetic note describes a pothole and rainwater near a park.
+
+00:00:53.500 --> 00:00:59.565
+When the resident requests transcription, SHRAVAN sends the recording through its server route to Gnani AI.
+
+00:00:59.565 --> 00:01:03.735
+Prisma version 3.0 detects Telugu and returns an editable Telugu-English transcript.
+
+00:01:03.735 --> 00:01:08.663
+The resident reviews the wording, corrects anything needed, and chooses whether to continue.
+
+00:01:08.663 --> 00:01:13.970
+The recording is used for transcription; it is not attached to the saved report.
+
+00:01:13.970 --> 00:01:18.140
+No automated system submits a complaint or decides who should act.
+
+00:01:18.500 --> 00:01:21.081
+A transcript is only a starting point.
+
+00:01:21.081 --> 00:01:26.980
+The resident can correct wording, names, or landmarks, then decide what the final report should say.
+
+00:01:27.500 --> 00:01:32.700
+She chooses Roads and potholes and enters near the public park as an approximate area.
+
+00:01:32.700 --> 00:01:35.820
+This is demo wording, not a verified civic location.
+
+00:01:36.500 --> 00:01:38.002
+The area is optional.
+
+00:01:38.002 --> 00:01:42.506
+SHRAVAN asks for an approximate public landmark and discourages exact home addresses.
+
+00:01:42.506 --> 00:01:46.260
+It does not attach the recording to the saved report.
+
+00:01:47.000 --> 00:01:51.390
+On the review screen, she checks the description and selects a read-back language separately.
+
+00:01:51.390 --> 00:01:54.840
+This gives her a chance to hear what will be saved.
+
+00:01:55.000 --> 00:02:02.040
+<lang te>సాయంత్రం park దగ్గర road మీద పెద్ద pothole ఉంది. rain వచ్చినప్పుడు water నిలుస్తోంది. దయచేసి త్వరగా repair చేయండి.</lang>
+In the evening, there is a large pothole near the park. When it rains, water collects. Please repair it soon.
+
+00:02:02.500 --> 00:02:06.266
+The language used for listening does not have to match the input.
+
+00:02:06.266 --> 00:02:10.660
+A resident can choose a supported Timbre language, then replay the text before saving.
+
+00:02:11.000 --> 00:02:13.880
+After saving, the demo reference stays in this browser.
+
+00:02:13.880 --> 00:02:19.640
+It is not an official case number, and SHRAVAN does not submit the report to a civic authority.
+
+00:02:20.000 --> 00:02:23.200
+The saved demo reference is local to this browser.
+
+00:02:23.200 --> 00:02:29.600
+Copy and share actions create a resident-controlled handoff; they do not send the report directly to government services.
+
+00:02:44.000 --> 00:02:47.600
+Prisma transcribes speech, and Timbre reads the report back.
+
+00:02:47.600 --> 00:02:53.200
+The browser reaches Gnani through server routes; the API key stays off the page.
+
+00:02:53.200 --> 00:02:56.400
+Residents review, edit and choose whether to share.
+
+00:02:56.400 --> 00:03:00.000
+SHRAVAN is a local demo, not an authority submission.

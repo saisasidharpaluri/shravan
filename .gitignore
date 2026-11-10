@@ -6,3 +6,4 @@ out
 .DS_Store
 /artifacts/shravan-demo-video/**
 !/artifacts/shravan-demo-video/SHRAVAN-Gnani-Challenge-Demo.mp4
+/artifacts/shravan-three-minute-video/

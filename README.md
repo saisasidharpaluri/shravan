@@ -8,9 +8,13 @@ SHRAVAN prepares a resident-authored demo report. It does **not** submit reports
 
 [Watch the SHRAVAN challenge demo](artifacts/shravan-demo-video/SHRAVAN-Gnani-Challenge-Demo.mp4)
 
+[Watch the three-minute walkthrough](public/demo/shravan-3-minute-demo.mp4)
+
+[Read the walkthrough captions](public/demo/shravan-3-minute-demo.en.vtt)
+
 [Read the one-page project pitch](public/shravan-pitch.pdf)
 
-The video demonstrates an illustrative Telugu-English pothole report. The bundled example audio is synthetic and does not contain a resident's recording or personal information.
+The videos demonstrate an illustrative Telugu-English pothole report. The bundled example audio is synthetic and does not contain a resident's recording or personal information. The longer walkthrough uses an original animated street illustration and clearly separates it from real app footage.
 
 ## What you can do
 
